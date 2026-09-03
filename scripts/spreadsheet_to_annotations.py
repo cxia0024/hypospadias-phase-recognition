@@ -2,13 +2,20 @@
 videos, mm:ss/hh:mm:ss timestamps) into the per-video interval CSVs the
 Stage 2 notebook expects under annotations/{video_id}.csv.
 
+Defaults below match the "Phase Timestamps" export template actually used
+for this project: a `Video #` column filled in only on each video's first
+row (blank cells mean "same video as the row above" — a merged-cell-style
+export), plus `Phase Label`, `Start (h:m:s)`, `End (h:m:s)` columns.
+
 Run this once, locally or in Colab, before Section 2 of
 notebooks/stage2_phase_recognition.ipynb. It does not touch the notebook
 or CFG — it only produces the annotations/ files that Stage 2's
-load_video_intervals() reads.
+load_video_intervals() reads. (If CFG.phase_taxonomy or CFG.videos in the
+notebook don't match your actual data, update those separately — this
+script prints exactly what it found so you can check.)
 
-Edit the CONFIG block below to match your spreadsheet's actual column
-headers, then run:
+If your spreadsheet uses different column headers, edit the CONFIG block
+below, then run:
 
     python scripts/spreadsheet_to_annotations.py
 """
@@ -21,13 +28,24 @@ import pandas as pd
 # ---------------------------------------------------------------------------
 # EDIT THESE to match your spreadsheet
 # ---------------------------------------------------------------------------
-INPUT_PATH = "phase_timestamps.xlsx"   # your spreadsheet (.xlsx or .csv)
-SHEET_NAME = 0                          # sheet name or index, if .xlsx
+INPUT_PATH = "Timestamps.xlsx"          # your spreadsheet (.xlsx or .csv)
+SHEET_NAME = "Phase Timestamps"          # sheet name or index, if .xlsx
 
-COL_VIDEO = "video_id"                  # column identifying which video a row belongs to
-COL_PHASE = "phase"                     # column with the phase label text
-COL_START = "start_time"                # column with the mm:ss / hh:mm:ss start
-COL_END = "end_time"                    # column with the mm:ss / hh:mm:ss end
+COL_VIDEO = "Video #"                    # column identifying which video a row belongs to
+COL_PHASE = "Phase Label"                # column with the phase label text
+COL_START = "Start (h:m:s)"              # column with the mm:ss / hh:mm:ss start
+COL_END = "End (h:m:s)"                  # column with the mm:ss / hh:mm:ss end
+
+# True if COL_VIDEO is blank on every row after a video's first row (a
+# merged-cell-style export, like this project's template). False if every
+# row already carries its own video_id/number.
+FORWARD_FILL_VIDEO = True
+
+# If COL_VIDEO holds a bare number (1, 2, 4, ...) rather than an ID like
+# "V1" already, this prefix builds the video_id used in output filenames
+# and in the Stage 2 notebook's CFG.videos. Set to "" if COL_VIDEO already
+# contains the exact ID you want (e.g. "V1", "video_03").
+VIDEO_ID_PREFIX = "V"
 
 # Must match the CVAT/annotations directory the Stage 2 notebook's CONFIG
 # points DIRS["annotations"] at (default: <project_root>/annotations).
@@ -57,6 +75,12 @@ def parse_timestamp(value) -> float:
     raise ValueError(f"unrecognized timestamp format: {value!r}")
 
 
+def build_video_id(raw) -> str:
+    if VIDEO_ID_PREFIX and float(raw).is_integer():
+        return f"{VIDEO_ID_PREFIX}{int(raw)}"
+    return str(raw).strip()
+
+
 def main():
     path = Path(INPUT_PATH)
     if path.suffix.lower() in (".xlsx", ".xls"):
@@ -71,9 +95,23 @@ def main():
             f"Found columns: {list(df.columns)}. Edit CONFIG at the top of this script."
         )
 
-    df = df.rename(columns={COL_VIDEO: "video_id", COL_PHASE: "phase",
+    df = df.rename(columns={COL_VIDEO: "video_num", COL_PHASE: "phase",
                              COL_START: "start_time", COL_END: "end_time"})
-    df = df[["video_id", "phase", "start_time", "end_time"]].dropna(how="all")
+    df = df[["video_num", "phase", "start_time", "end_time"]].dropna(how="all")
+
+    if FORWARD_FILL_VIDEO:
+        df["video_num"] = df["video_num"].ffill()
+    df["video_id"] = df["video_num"].apply(build_video_id)
+
+    raw_phase = df["phase"].astype(str)
+    stripped_phase = raw_phase.str.strip()
+    whitespace_rows = df[raw_phase != stripped_phase]
+    if len(whitespace_rows):
+        print("Trimmed leading/trailing whitespace from Phase Label on these rows "
+              "(would otherwise silently create a duplicate near-identical class):")
+        print(whitespace_rows[["video_id", "phase"]].to_string())
+        print()
+    df["phase"] = stripped_phase
 
     df["start_sec"] = df["start_time"].apply(parse_timestamp)
     df["end_sec"] = df["end_time"].apply(parse_timestamp)
@@ -84,9 +122,17 @@ def main():
         print(bad[["video_id", "phase", "start_time", "end_time"]])
         print()
 
-    print("Unique phase labels found — check these match CFG.phase_taxonomy exactly (case-sensitive):")
-    for p in sorted(df.phase.unique()):
+    videos_found = sorted(df.video_id.unique(), key=lambda v: (len(v), v))
+    print(f"Videos found ({len(videos_found)}): {videos_found}")
+    print("If this doesn't match CFG.videos in the Stage 2 notebook, update CFG.videos to this list.")
+    print()
+
+    phases_found = sorted(df.phase.unique())
+    print(f"Unique phase labels found ({len(phases_found)}):")
+    for p in phases_found:
         print(f"  {p!r}")
+    print("Update CFG.phase_taxonomy in the Stage 2 notebook to match these exactly "
+          "(plus 'background' if CFG.gap_policy == 'background').")
     print()
 
     out_dir = Path(OUTPUT_DIR)
