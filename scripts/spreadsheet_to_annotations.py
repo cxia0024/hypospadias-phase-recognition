@@ -41,11 +41,13 @@ COL_END = "End (h:m:s)"                  # column with the mm:ss / hh:mm:ss end
 # row already carries its own video_id/number.
 FORWARD_FILL_VIDEO = True
 
-# If COL_VIDEO holds a bare number (1, 2, 4, ...) rather than an ID like
-# "V1" already, this prefix builds the video_id used in output filenames
-# and in the Stage 2 notebook's CFG.videos. Set to "" if COL_VIDEO already
-# contains the exact ID you want (e.g. "V1", "video_03").
-VIDEO_ID_PREFIX = "V"
+# If COL_VIDEO holds a bare number (1, 2, 4, ...) and your raw video files
+# are also named by that bare number (e.g. "4.mp4", not "V4.mp4"), leave
+# this "" so the output video_id matches your filenames exactly — that's
+# what CFG.videos in the Stage 2 notebook must match too. Set it to a
+# prefix like "V" only if you actually want IDs like "V4" (and your video
+# files are named that way).
+VIDEO_ID_PREFIX = ""
 
 # Must match the CVAT/annotations directory the Stage 2 notebook's CONFIG
 # points DIRS["annotations"] at (default: <project_root>/annotations).
@@ -76,8 +78,11 @@ def parse_timestamp(value) -> float:
 
 
 def build_video_id(raw) -> str:
-    if VIDEO_ID_PREFIX and float(raw).is_integer():
-        return f"{VIDEO_ID_PREFIX}{int(raw)}"
+    try:
+        if float(raw).is_integer():
+            return f"{VIDEO_ID_PREFIX}{int(raw)}"
+    except (TypeError, ValueError):
+        pass  # raw isn't numeric (already a string ID like "video_03")
     return str(raw).strip()
 
 
