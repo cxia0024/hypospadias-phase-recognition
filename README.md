@@ -33,3 +33,51 @@ Run cells top to bottom in Colab; `CONFIG` near the top of the notebook is
 the only place that needs paths edited before running against real data
 (raw videos, CVAT exports, and the Stage 1 detector cache, all expected
 under a single project root on Google Drive).
+
+## Stage 4 — Highlight Reels
+
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/cxia0024/hypospadias-phase-recognition/blob/main/notebooks/stage4_highlight_reels.ipynb)
+
+`notebooks/stage4_highlight_reels.ipynb` builds short highlight reels from
+the full-length videos, using Stage 2's saved artefacts (per-fold GRU
+checkpoints, cached visual embeddings, phase logits) and Stage 1's cached
+instrument detections. It reuses Stage 2's project root and only adds a
+`stage4/` subtree for its own outputs.
+
+All audio is stripped from every video with `ffmpeg -an` before anything
+else runs; no audio is read, used, or written at any later stage, and the
+final reels carry no audio track.
+
+The notebook builds, in order:
+
+1. **Saliency** — gradient of the winning phase-recognition model's
+   predicted-phase logit with respect to each frame's visual embedding,
+   computed through the Stage 2 LOOCV fold that held that video out.
+   Min-max normalised per video, smoothed, then thresholded (a sweep over
+   five candidate thresholds, with one chosen as the operating point) into
+   contiguous high-saliency segments.
+2. **Reel 1 (saliency only)** — top-N saliency-ranked segments per phase,
+   sized to a 2-5 minute (±30s) final playback duration at 2x speed. This
+   also fixes the clips-per-phase quota Reels 2 and 3 are asked to match.
+3. **Templated captioning** — frame-level captions from predicted phase +
+   detected instruments only (no LLM), aggregated into clip-level captions
+   either by a fixed sliding window (512s and 32s, 50% overlap — Reel 2's
+   saliency-blind candidate pool) or over a saliency segment's own span
+   (Reel 3).
+4. **Reel 2 (LLM only)** — an LLM (ChatGPT, Claude, or Ollama) selects
+   clips from evenly-spaced captioned candidates, with no saliency
+   information involved anywhere in the selection.
+5. **Reel 3 (combined)** — the same LLM selection, but re-ranking the
+   saliency-shortlisted candidate pool from Reel 1 instead of evenly-spaced
+   clips.
+6. **Assembly** — chronological order, burned-in phase-label overlay,
+   uniform 2x speed, no audio, high-quality (lossless by default) encode.
+7. **Evaluation** — phase coverage, compression ratio, intra-reel and
+   reel-to-video cosine similarity, Spearman alignment with saliency, and
+   inter-reel/inter-LLM Jaccard similarity. All descriptive, no
+   inferential testing.
+
+`CFG.winning_backbone` (from Stage 2's `backbone_sweep_summary.csv`) and
+at least one LLM backend's credentials (`OPENAI_API_KEY`,
+`ANTHROPIC_API_KEY`, or a reachable Ollama host) need setting before
+running end to end.
