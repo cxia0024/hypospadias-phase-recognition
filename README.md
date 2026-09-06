@@ -58,10 +58,16 @@ The notebook builds, in order:
 2. **Reel 1 (saliency only)** — top-N saliency-ranked segments per phase,
    sized to a 2-5 minute (±30s) final playback duration at 2x speed. This
    also fixes the clips-per-phase quota Reels 2 and 3 are asked to match.
-3. **Templated captioning** — frame-level captions from predicted phase
-   only (no LLM), aggregated into clip-level captions either by a fixed
-   sliding window (512s and 32s, 50% overlap — Reel 2's saliency-blind
-   candidate pool) or over a saliency segment's own span (Reel 3).
+3. **Vision-LLM captioning** — a vision-capable LLM (Claude, GPT-4V-class
+   OpenAI models, or Ollama) looks at each sampled frame directly and
+   describes it, prefixed with the phase-recognition model's own predicted
+   phase. This is the dominant cost/time driver in the notebook (one API
+   call with an image per captioned frame), so frames are only sampled
+   every `caption_frame_stride_s` (default 8s), not every 2fps-sampled
+   frame. Captions are aggregated into clip-level captions either by a
+   fixed sliding window (512s and 32s, 50% overlap — Reel 2's
+   saliency-blind candidate pool) or over a saliency segment's own span
+   (Reel 3).
 4. **Reel 2 (LLM only)** — an LLM (ChatGPT, Claude, or Ollama) selects
    clips from evenly-spaced captioned candidates, with no saliency
    information involved anywhere in the selection.
@@ -75,7 +81,10 @@ The notebook builds, in order:
    inter-reel/inter-LLM Jaccard similarity. All descriptive, no
    inferential testing.
 
-`CFG.winning_backbone` (from Stage 2's `backbone_sweep_summary.csv`) and
-at least one LLM backend's credentials (`OPENAI_API_KEY`,
-`ANTHROPIC_API_KEY`, or a reachable Ollama host) need setting before
-running end to end.
+`CFG.winning_backbone` (from Stage 2's `backbone_sweep_summary.csv`) needs
+setting before running end to end. `CFG.caption_vision_backend`'s
+credentials are required for captioning (Section 5) even if you only run
+one selection backend afterwards, since captions are generated once and
+shared; at least one selection backend's credentials (`OPENAI_API_KEY`,
+`ANTHROPIC_API_KEY`, or a reachable Ollama host with a vision model
+pulled) are needed for Reel 2/3 selection.
