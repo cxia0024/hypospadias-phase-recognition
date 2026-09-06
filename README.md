@@ -40,9 +40,8 @@ under a single project root on Google Drive).
 
 `notebooks/stage4_highlight_reels.ipynb` builds short highlight reels from
 the full-length videos, using Stage 2's saved artefacts (per-fold GRU
-checkpoints, cached visual embeddings, phase logits) and Stage 1's cached
-instrument detections. It reuses Stage 2's project root and only adds a
-`stage4/` subtree for its own outputs.
+checkpoints, cached visual embeddings, phase logits). It reuses Stage 2's
+project root and only adds a `stage4/` subtree for its own outputs.
 
 All audio is stripped from every video with `ffmpeg -an` before anything
 else runs; no audio is read, used, or written at any later stage, and the
@@ -59,11 +58,10 @@ The notebook builds, in order:
 2. **Reel 1 (saliency only)** — top-N saliency-ranked segments per phase,
    sized to a 2-5 minute (±30s) final playback duration at 2x speed. This
    also fixes the clips-per-phase quota Reels 2 and 3 are asked to match.
-3. **Templated captioning** — frame-level captions from predicted phase +
-   detected instruments only (no LLM), aggregated into clip-level captions
-   either by a fixed sliding window (512s and 32s, 50% overlap — Reel 2's
-   saliency-blind candidate pool) or over a saliency segment's own span
-   (Reel 3).
+3. **Templated captioning** — frame-level captions from predicted phase
+   only (no LLM), aggregated into clip-level captions either by a fixed
+   sliding window (512s and 32s, 50% overlap — Reel 2's saliency-blind
+   candidate pool) or over a saliency segment's own span (Reel 3).
 4. **Reel 2 (LLM only)** — an LLM (ChatGPT, Claude, or Ollama) selects
    clips from evenly-spaced captioned candidates, with no saliency
    information involved anywhere in the selection.
