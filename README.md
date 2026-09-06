@@ -62,8 +62,13 @@ The notebook builds, in order:
    `build_candidate_pool_hybrid` (recommended) layers this on top of
    `build_candidate_pool` (global threshold only, kept for comparison).
 2. **Reel 1 (saliency only)** — top-N saliency-ranked segments per phase,
-   sized to a 2-5 minute (±30s) final playback duration at 2x speed. This
-   also fixes the clips-per-phase quota Reels 2 and 3 are asked to match.
+   capped at `CFG.reel1_max_clips_per_phase` (default 5) so a phase with
+   many short candidates can't absorb rounds almost for free while a
+   sparser phase stays stuck at 1 — both the duration target and phase
+   coverage could otherwise be satisfied with wildly uneven per-phase clip
+   counts. Sized to a 2-5 minute (±30s) final playback duration at 2x
+   speed. This also fixes the clips-per-phase quota Reels 2-4 are asked
+   to match.
 3. **Vision-LLM captioning** — a vision-capable LLM (Claude, GPT-4V-class
    OpenAI models, or Ollama) looks at each sampled frame directly and
    describes it, prefixed with the phase-recognition model's own predicted
@@ -80,9 +85,15 @@ The notebook builds, in order:
 5. **Reel 3 (combined)** — the same LLM selection, but re-ranking the
    saliency-shortlisted candidate pool from Reel 1 instead of evenly-spaced
    clips.
-6. **Assembly** — chronological order, burned-in phase-label overlay,
+6. **Reel 4 (combined pool)** — the same LLM selection again, but choosing
+   freely from the *union* of Reel 3's saliency-shortlisted pool and
+   Reel 2's evenly-spaced pool. Unlike Reel 3, a phase that saliency never
+   surfaces isn't invisible here — the LLM can still find it via the
+   evenly-spaced candidates, while saliency-derived candidates remain
+   available too.
+7. **Assembly** — chronological order, burned-in phase-label overlay,
    uniform 2x speed, no audio, high-quality (lossless by default) encode.
-7. **Evaluation** — phase coverage, compression ratio, intra-reel and
+8. **Evaluation** — phase coverage, compression ratio, intra-reel and
    reel-to-video cosine similarity, Spearman alignment with saliency, and
    inter-reel/inter-LLM Jaccard similarity. All descriptive, no
    inferential testing.
