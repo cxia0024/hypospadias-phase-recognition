@@ -54,7 +54,13 @@ The notebook builds, in order:
    computed through the Stage 2 LOOCV fold that held that video out.
    Min-max normalised per video, smoothed, then thresholded (a sweep over
    five candidate thresholds, with one chosen as the operating point) into
-   contiguous high-saliency segments.
+   contiguous high-saliency segments. A phase left with ≤1 candidate under
+   that global threshold gets a per-phase rescue instead of more threshold
+   tuning: that phase's own frames are re-extracted against their own
+   relative percentile, so a phase that's inherently calmer than others
+   isn't starved by a threshold calibrated to busier phases —
+   `build_candidate_pool_hybrid` (recommended) layers this on top of
+   `build_candidate_pool` (global threshold only, kept for comparison).
 2. **Reel 1 (saliency only)** — top-N saliency-ranked segments per phase,
    sized to a 2-5 minute (±30s) final playback duration at 2x speed. This
    also fixes the clips-per-phase quota Reels 2 and 3 are asked to match.
