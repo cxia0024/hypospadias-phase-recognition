@@ -1,0 +1,133 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1900 2063" width="1900" height="2063" font-family="Helvetica, Arial, sans-serif">
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#475569"/>
+    </marker>
+    <marker id="arrow-light" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1900" height="2063" fill="#ffffff"/>
+
+<text x="950.0" y="78" font-family="Helvetica, Arial, sans-serif" font-size="30" font-weight="bold" font-style="normal" fill="#0f172a" text-anchor="middle">Stage 2 — Phase Recognition: Full Pipeline</text>
+<text x="950.0" y="108" font-family="Helvetica, Arial, sans-serif" font-size="15.5" font-weight="normal" font-style="normal" fill="#64748b" text-anchor="middle">Distal hypospadias repair videos  ·  7 in-house cases  ·  leave-one-video-out cross-validation</text>
+<rect x="460" y="146" width="478.0" height="62" rx="14" ry="14" fill="#eef2ff" stroke="#4338ca" stroke-width="2"/>
+<text x="699.0" y="173" font-family="Helvetica, Arial, sans-serif" font-size="16" font-weight="bold" font-style="normal" fill="#312e81" text-anchor="middle">Raw Videos</text>
+<text x="699.0" y="194" font-family="Helvetica, Arial, sans-serif" font-size="12.5" font-weight="normal" font-style="normal" fill="#4338ca" text-anchor="middle">7 in-house recordings, sampled at 2 fps</text>
+<rect x="962.0" y="146" width="478.0" height="62" rx="14" ry="14" fill="#eef2ff" stroke="#4338ca" stroke-width="2"/>
+<text x="1201.0" y="173" font-family="Helvetica, Arial, sans-serif" font-size="16" font-weight="bold" font-style="normal" fill="#312e81" text-anchor="middle">CVAT Annotations</text>
+<text x="1201.0" y="194" font-family="Helvetica, Arial, sans-serif" font-size="12.5" font-weight="normal" font-style="normal" fill="#4338ca" text-anchor="middle">Interpolated phase-boundary tracks</text>
+<line x1="950.0" y1="208" x2="950.0" y2="242" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+<rect x="460" y="242" width="980" height="180" rx="14" ry="14" fill="#eff6ff" stroke="#2563eb" stroke-width="2.5"/>
+<clipPath id="clip-1"><rect x="460" y="242" width="980" height="44" rx="14" ry="14"/></clipPath>
+<g clip-path="url(#clip-1)"><rect x="460" y="242" width="980" height="44" fill="#2563eb"/></g>
+<rect x="460" y="242" width="980" height="44" rx="14" ry="14" fill="none" stroke="#2563eb" stroke-width="2.5"/>
+<text x="484" y="272" font-family="Helvetica, Arial, sans-serif" font-size="19" font-weight="bold" font-style="normal" fill="#ffffff" text-anchor="start">1 · Manifest Construction</text>
+<text x="484" y="318" font-family="Helvetica, Arial, sans-serif" font-size="15.5" font-weight="normal" font-style="normal" fill="#334155" text-anchor="start">Parse CVAT interval tracks  →  per-frame phase labels</text>
+<text x="484" y="343" font-family="Helvetica, Arial, sans-serif" font-size="15.5" font-weight="normal" font-style="normal" fill="#334155" text-anchor="start">Overlap check: no frame may carry two phase labels</text>
+<text x="484" y="368" font-family="Helvetica, Arial, sans-serif" font-size="15.5" font-weight="normal" font-style="normal" fill="#334155" text-anchor="start">Sampling: 2 fps base rate + dense resample of segments &lt; 10 frames</text>
+<text x="484" y="393" font-family="Helvetica, Arial, sans-serif" font-size="15.5" font-weight="normal" font-style="normal" fill="#334155" text-anchor="start">Outputs: phase-by-video incidence matrix, frame counts</text>
+<line x1="950.0" y1="422" x2="950.0" y2="456" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+<rect x="460" y="456" width="980" height="212" rx="14" ry="14" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2.5"/>
+<clipPath id="clip-2"><rect x="460" y="456" width="980" height="44" rx="14" ry="14"/></clipPath>
+<g clip-path="url(#clip-2)"><rect x="460" y="456" width="980" height="44" fill="#7c3aed"/></g>
+<rect x="460" y="456" width="980" height="44" rx="14" ry="14" fill="none" stroke="#7c3aed" stroke-width="2.5"/>
+<text x="484" y="486" font-family="Helvetica, Arial, sans-serif" font-size="19" font-weight="bold" font-style="normal" fill="#ffffff" text-anchor="start">2 · Feature Extraction (frozen backbones)</text>
+<text x="484" y="532" font-family="Helvetica, Arial, sans-serif" font-size="15.5" font-weight="normal" font-style="normal" fill="#334155" text-anchor="start">Each backbone: own preprocessing, extracted once, cached in frame order (~1.4 GB total)</text>
+<rect x="484" y="540" width="221.0" height="64" rx="10" ry="10" fill="#ffffff" stroke="#7c3aed" stroke-width="2"/>
+<text x="594.5" y="566" font-family="Helvetica, Arial, sans-serif" font-size="14.5" font-weight="bold" font-style="normal" fill="#1f2937" text-anchor="middle">ResNet-50</text>
+<text x="594.5" y="587" font-family="Helvetica, Arial, sans-serif" font-size="12.5" font-weight="normal" font-style="normal" fill="#64748b" text-anchor="middle">2048-d · supervised · GAP</text>
+<rect x="721.0" y="540" width="221.0" height="64" rx="10" ry="10" fill="#ffffff" stroke="#7c3aed" stroke-width="2"/>
+<text x="831.5" y="566" font-family="Helvetica, Arial, sans-serif" font-size="14.5" font-weight="bold" font-style="normal" fill="#1f2937" text-anchor="middle">DINO v1</text>
+<text x="831.5" y="587" font-family="Helvetica, Arial, sans-serif" font-size="12.5" font-weight="normal" font-style="normal" fill="#64748b" text-anchor="middle">768-d · ViT-B/16 · CLS</text>
+<rect x="958.0" y="540" width="221.0" height="64" rx="10" ry="10" fill="#ffffff" stroke="#7c3aed" stroke-width="2"/>
+<text x="1068.5" y="566" font-family="Helvetica, Arial, sans-serif" font-size="14.5" font-weight="bold" font-style="normal" fill="#1f2937" text-anchor="middle">DINOv2</text>
+<text x="1068.5" y="587" font-family="Helvetica, Arial, sans-serif" font-size="12.5" font-weight="normal" font-style="normal" fill="#64748b" text-anchor="middle">768-d · ViT-B/14 · CLS</text>
+<rect x="1195.0" y="540" width="221.0" height="64" rx="10" ry="10" fill="#ffffff" stroke="#7c3aed" stroke-width="2"/>
+<text x="1305.5" y="566" font-family="Helvetica, Arial, sans-serif" font-size="14.5" font-weight="bold" font-style="normal" fill="#1f2937" text-anchor="middle">MoCo v3</text>
+<text x="1305.5" y="587" font-family="Helvetica, Arial, sans-serif" font-size="12.5" font-weight="normal" font-style="normal" fill="#64748b" text-anchor="middle">2048-d · ResNet-50 · GAP</text>
+<text x="484" y="636" font-family="Helvetica, Arial, sans-serif" font-size="14" font-weight="normal" font-style="italic" fill="#475569" text-anchor="start">+ Stage 1 detector features (9-d: conf / presence / count × hand, needle driver, forceps) — Model D only</text>
+<line x1="950.0" y1="668" x2="950.0" y2="702" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+<rect x="460" y="702" width="980" height="130" rx="14" ry="14" fill="#f0fdfa" stroke="#0d9488" stroke-width="2.5"/>
+<clipPath id="clip-3"><rect x="460" y="702" width="980" height="44" rx="14" ry="14"/></clipPath>
+<g clip-path="url(#clip-3)"><rect x="460" y="702" width="980" height="44" fill="#0d9488"/></g>
+<rect x="460" y="702" width="980" height="44" rx="14" ry="14" fill="none" stroke="#0d9488" stroke-width="2.5"/>
+<text x="484" y="732" font-family="Helvetica, Arial, sans-serif" font-size="19" font-weight="bold" font-style="normal" fill="#ffffff" text-anchor="start">3 · t-SNE Sanity Check</text>
+<text x="484" y="778" font-family="Helvetica, Arial, sans-serif" font-size="15.5" font-weight="normal" font-style="normal" fill="#334155" text-anchor="start">Per backbone, coloured by phase and by video</text>
+<text x="484" y="803" font-family="Helvetica, Arial, sans-serif" font-size="15.5" font-weight="normal" font-style="normal" fill="#334155" text-anchor="start">Early warning, not a metric — a phase invisible here won't be learnable by the GRU</text>
+<line x1="950.0" y1="832" x2="950.0" y2="866" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+<rect x="460" y="866" width="980" height="130" rx="14" ry="14" fill="#f7fee7" stroke="#65a30d" stroke-width="2.5"/>
+<clipPath id="clip-4"><rect x="460" y="866" width="980" height="44" rx="14" ry="14"/></clipPath>
+<g clip-path="url(#clip-4)"><rect x="460" y="866" width="980" height="44" fill="#65a30d"/></g>
+<rect x="460" y="866" width="980" height="44" rx="14" ry="14" fill="none" stroke="#65a30d" stroke-width="2.5"/>
+<text x="484" y="896" font-family="Helvetica, Arial, sans-serif" font-size="19" font-weight="bold" font-style="normal" fill="#ffffff" text-anchor="start">4 · Baselines</text>
+<text x="484" y="942" font-family="Helvetica, Arial, sans-serif" font-size="15.5" font-weight="normal" font-style="normal" fill="#334155" text-anchor="start">Majority class — always predicts the longest phase (frame count)</text>
+<text x="484" y="967" font-family="Helvetica, Arial, sans-serif" font-size="15.5" font-weight="normal" font-style="normal" fill="#334155" text-anchor="start">Per-frame logistic regression on frozen features — no temporal model</text>
+<line x1="950.0" y1="996" x2="950.0" y2="1030" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+<rect x="460" y="1030" width="980" height="180" rx="14" ry="14" fill="#fff7ed" stroke="#ea580c" stroke-width="2.5"/>
+<clipPath id="clip-5"><rect x="460" y="1030" width="980" height="44" rx="14" ry="14"/></clipPath>
+<g clip-path="url(#clip-5)"><rect x="460" y="1030" width="980" height="44" fill="#ea580c"/></g>
+<rect x="460" y="1030" width="980" height="44" rx="14" ry="14" fill="none" stroke="#ea580c" stroke-width="2.5"/>
+<text x="484" y="1060" font-family="Helvetica, Arial, sans-serif" font-size="19" font-weight="bold" font-style="normal" fill="#ffffff" text-anchor="start">5 · Leave-One-Video-Out CV  ·  BiGRU Backbone Sweep</text>
+<text x="484" y="1106" font-family="Helvetica, Arial, sans-serif" font-size="15.5" font-weight="normal" font-style="normal" fill="#334155" text-anchor="start">Frozen features → linear projection → single-layer BiGRU → per-frame head</text>
+<text x="484" y="1131" font-family="Helvetica, Arial, sans-serif" font-size="15.5" font-weight="normal" font-style="normal" fill="#334155" text-anchor="start">Overlapping windows: size 1024, stride 512 (~8.5 min) — logits averaged at inference</text>
+<text x="484" y="1156" font-family="Helvetica, Arial, sans-serif" font-size="15.5" font-weight="normal" font-style="normal" fill="#334155" text-anchor="start">All 4 backbones, identical frames / hyperparameters / folds / seeds</text>
+<text x="484" y="1181" font-family="Helvetica, Arial, sans-serif" font-size="15.5" font-weight="normal" font-style="normal" fill="#334155" text-anchor="start">7 folds — scalers, weights, class weights refit per fold on 6 training videos</text>
+<line x1="950.0" y1="1210" x2="950.0" y2="1244" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+<rect x="460" y="1244" width="980" height="155" rx="14" ry="14" fill="#fef2f2" stroke="#dc2626" stroke-width="2.5"/>
+<clipPath id="clip-6"><rect x="460" y="1244" width="980" height="44" rx="14" ry="14"/></clipPath>
+<g clip-path="url(#clip-6)"><rect x="460" y="1244" width="980" height="44" fill="#dc2626"/></g>
+<rect x="460" y="1244" width="980" height="44" rx="14" ry="14" fill="none" stroke="#dc2626" stroke-width="2.5"/>
+<text x="484" y="1274" font-family="Helvetica, Arial, sans-serif" font-size="19" font-weight="bold" font-style="normal" fill="#ffffff" text-anchor="start">6 · Model C  vs.  Model D</text>
+<text x="484" y="1320" font-family="Helvetica, Arial, sans-serif" font-size="15.5" font-weight="normal" font-style="normal" fill="#334155" text-anchor="start">Model C — winning backbone → GRU (reference system)</text>
+<text x="484" y="1345" font-family="Helvetica, Arial, sans-serif" font-size="15.5" font-weight="normal" font-style="normal" fill="#334155" text-anchor="start">Model D — winning backbone + detector features → GRU</text>
+<text x="484" y="1370" font-family="Helvetica, Arial, sans-serif" font-size="15.5" font-weight="normal" font-style="normal" fill="#334155" text-anchor="start">Feature blocks standardised separately; scalers fit per fold before concatenation</text>
+<line x1="950.0" y1="1399" x2="950.0" y2="1433" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+<rect x="460" y="1433" width="980" height="155" rx="14" ry="14" fill="#fffbeb" stroke="#d97706" stroke-width="2.5"/>
+<clipPath id="clip-7"><rect x="460" y="1433" width="980" height="44" rx="14" ry="14"/></clipPath>
+<g clip-path="url(#clip-7)"><rect x="460" y="1433" width="980" height="44" fill="#d97706"/></g>
+<rect x="460" y="1433" width="980" height="44" rx="14" ry="14" fill="none" stroke="#d97706" stroke-width="2.5"/>
+<text x="484" y="1463" font-family="Helvetica, Arial, sans-serif" font-size="19" font-weight="bold" font-style="normal" fill="#ffffff" text-anchor="start">7 · Metrics</text>
+<text x="484" y="1509" font-family="Helvetica, Arial, sans-serif" font-size="15.5" font-weight="normal" font-style="normal" fill="#334155" text-anchor="start">Pooled — macro-F1 (headline), per-phase F1, confusion matrix</text>
+<text x="484" y="1534" font-family="Helvetica, Arial, sans-serif" font-size="15.5" font-weight="normal" font-style="normal" fill="#334155" text-anchor="start">Segmental — edit score, F1@IoU, per-video phase timelines</text>
+<text x="484" y="1559" font-family="Helvetica, Arial, sans-serif" font-size="15.5" font-weight="normal" font-style="normal" fill="#334155" text-anchor="start">Per-video metrics, computed for the paired comparison below</text>
+<line x1="950.0" y1="1588" x2="950.0" y2="1622" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+<rect x="460" y="1622" width="980" height="155" rx="14" ry="14" fill="#fdf4ff" stroke="#c026d3" stroke-width="2.5"/>
+<clipPath id="clip-8"><rect x="460" y="1622" width="980" height="44" rx="14" ry="14"/></clipPath>
+<g clip-path="url(#clip-8)"><rect x="460" y="1622" width="980" height="44" fill="#c026d3"/></g>
+<rect x="460" y="1622" width="980" height="44" rx="14" ry="14" fill="none" stroke="#c026d3" stroke-width="2.5"/>
+<text x="484" y="1652" font-family="Helvetica, Arial, sans-serif" font-size="19" font-weight="bold" font-style="normal" fill="#ffffff" text-anchor="start">8 · Statistics</text>
+<text x="484" y="1698" font-family="Helvetica, Arial, sans-serif" font-size="15.5" font-weight="normal" font-style="normal" fill="#334155" text-anchor="start">Full per-video table (n = 7) and win counts, Model D vs Model C</text>
+<text x="484" y="1723" font-family="Helvetica, Arial, sans-serif" font-size="15.5" font-weight="normal" font-style="normal" fill="#334155" text-anchor="start">Cliff's delta with bootstrap CI — descriptive effect size</text>
+<text x="484" y="1748" font-family="Helvetica, Arial, sans-serif" font-size="15.5" font-weight="normal" font-style="normal" fill="#334155" text-anchor="start">Pre-specified Wilcoxon signed-rank, Model C vs D — the sole inferential test</text>
+<line x1="950.0" y1="1777" x2="950.0" y2="1811" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+<rect x="460" y="1811" width="980" height="155" rx="14" ry="14" fill="#eff6ff" stroke="#1d4ed8" stroke-width="2.5"/>
+<clipPath id="clip-9"><rect x="460" y="1811" width="980" height="44" rx="14" ry="14"/></clipPath>
+<g clip-path="url(#clip-9)"><rect x="460" y="1811" width="980" height="44" fill="#1d4ed8"/></g>
+<rect x="460" y="1811" width="980" height="44" rx="14" ry="14" fill="none" stroke="#1d4ed8" stroke-width="2.5"/>
+<text x="484" y="1841" font-family="Helvetica, Arial, sans-serif" font-size="19" font-weight="bold" font-style="normal" fill="#ffffff" text-anchor="start">9 · Outputs</text>
+<text x="484" y="1887" font-family="Helvetica, Arial, sans-serif" font-size="15.5" font-weight="normal" font-style="normal" fill="#334155" text-anchor="start">Per-video &amp; pooled results tables, confusion-matrix PNGs, run manifest</text>
+<text x="484" y="1912" font-family="Helvetica, Arial, sans-serif" font-size="15.5" font-weight="normal" font-style="normal" fill="#334155" text-anchor="start">Raw per-video logits + fold checkpoints  {run}__{video}.pt  (one model per held-out video)</text>
+<text x="484" y="1937" font-family="Helvetica, Arial, sans-serif" font-size="15.5" font-weight="normal" font-style="normal" fill="#334155" text-anchor="start">Per-frame prediction CSV  (video, frame, timestamp, true / predicted phase)</text>
+<rect x="40" y="466" width="380" height="168.8" rx="12" ry="12" fill="#f8fafc" stroke="#64748b" stroke-width="2" stroke-dasharray="7,5"/>
+<text x="58" y="496" font-family="Helvetica, Arial, sans-serif" font-size="15.5" font-weight="bold" font-style="normal" fill="#64748b" text-anchor="start">Stage 1 (sibling repo)</text>
+<text x="58" y="520" font-family="Helvetica, Arial, sans-serif" font-size="13.5" font-weight="normal" font-style="normal" fill="#475569" text-anchor="start">AVOS YOLOv8 instrument detector</text>
+<text x="58" y="545" font-family="Helvetica, Arial, sans-serif" font-size="13.5" font-weight="normal" font-style="normal" fill="#475569" text-anchor="start">Run over every sampled frame;</text>
+<text x="58" y="570" font-family="Helvetica, Arial, sans-serif" font-size="13.5" font-weight="normal" font-style="normal" fill="#475569" text-anchor="start">no ground-truth validation here —</text>
+<text x="58" y="595" font-family="Helvetica, Arial, sans-serif" font-size="13.5" font-weight="normal" font-style="normal" fill="#475569" text-anchor="start">Model D read as conditional on it.</text>
+<path d="M 420 550.4 L 460 496" stroke="#94a3b8" stroke-width="2.5" stroke-dasharray="6,5" fill="none" marker-end="url(#arrow-light)"/>
+<rect x="1480" y="696" width="380" height="118.8" rx="12" ry="12" fill="#f8fafc" stroke="#64748b" stroke-width="2" stroke-dasharray="7,5"/>
+<text x="1498" y="726" font-family="Helvetica, Arial, sans-serif" font-size="15.5" font-weight="bold" font-style="normal" fill="#64748b" text-anchor="start">→ Stage 3</text>
+<text x="1498" y="750" font-family="Helvetica, Arial, sans-serif" font-size="13.5" font-weight="normal" font-style="normal" fill="#475569" text-anchor="start">Embedding / clustering analysis</text>
+<text x="1498" y="775" font-family="Helvetica, Arial, sans-serif" font-size="13.5" font-weight="normal" font-style="normal" fill="#475569" text-anchor="start">built on these t-SNE projections.</text>
+<path d="M 1440 732 L 1480 755.4" stroke="#94a3b8" stroke-width="2.5" stroke-dasharray="6,5" fill="none" marker-end="url(#arrow-light)"/>
+<rect x="1480" y="1831" width="380" height="168.8" rx="12" ry="12" fill="#f8fafc" stroke="#64748b" stroke-width="2" stroke-dasharray="7,5"/>
+<text x="1498" y="1861" font-family="Helvetica, Arial, sans-serif" font-size="15.5" font-weight="bold" font-style="normal" fill="#64748b" text-anchor="start">→ Stage 4</text>
+<text x="1498" y="1885" font-family="Helvetica, Arial, sans-serif" font-size="13.5" font-weight="normal" font-style="normal" fill="#475569" text-anchor="start">Saliency &amp; segment selection.</text>
+<text x="1498" y="1910" font-family="Helvetica, Arial, sans-serif" font-size="13.5" font-weight="normal" font-style="normal" fill="#475569" text-anchor="start">Loads the fold checkpoint that</text>
+<text x="1498" y="1935" font-family="Helvetica, Arial, sans-serif" font-size="13.5" font-weight="normal" font-style="normal" fill="#475569" text-anchor="start">never saw its target video, plus</text>
+<text x="1498" y="1960" font-family="Helvetica, Arial, sans-serif" font-size="13.5" font-weight="normal" font-style="normal" fill="#475569" text-anchor="start">this stage's phase logits.</text>
+<path d="M 1440 1871 L 1480 1915.4" stroke="#94a3b8" stroke-width="2.5" stroke-dasharray="6,5" fill="none" marker-end="url(#arrow-light)"/>
+<text x="950.0" y="2033.8" font-family="Helvetica, Arial, sans-serif" font-size="13.5" font-weight="normal" font-style="italic" fill="#94a3b8" text-anchor="middle">Everything fitted to data (weights, scalers, class weights) is rebuilt inside each fold from that fold's 6 training videos only.</text>
+</svg>
